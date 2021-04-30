@@ -628,6 +628,8 @@ class NNClass(object):
 		pf.ListArrayToFile(b,'float32',f)
 		pf.ArrayToFile(self.Jt[k],'float32',f)
 		pf.ArrayToFile(self.Jc[k],'float32',f)
+		pf.ArrayToFile(self.At[k],'float32',f)
+		pf.ArrayToFile(self.Ac[k],'float32',f)
 		f.close()
 		
 

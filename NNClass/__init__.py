@@ -1,1 +1,2 @@
-from .NNClassifier import NNClassifier
+from .NNClass import NNClass
+from .LoadANN import LoadANN
