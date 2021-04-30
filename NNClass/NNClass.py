@@ -206,9 +206,9 @@ class NNClass(object):
 			self.Xts = np.array(X)
 		
 		if np.size(y.shape) == 1:
-			self.ycv = self._ClassLabelToOnehot(y)
+			self.yts = self._ClassLabelToOnehot(y)
 		else:
-			self.ycv = np.array(y)
+			self.yts = np.array(y)
 			
 		self.test = (self.Xts,self.yts)
 
@@ -286,10 +286,10 @@ class NNClass(object):
 		if self.k == 1:
 			hist = self.model[0].fit(self.X,self.y,epochs=nEpoch,batch_size=BatchSize,validation_data=self.val,verbose=verbose,sample_weight=self.SampleWeights)
 			self.Jt[0] = np.append(self.Jt[0],hist.history['loss'])
-			self.At[0] = np.append(self.At[0],hist.history['accuracy'])
+			self.At[0] = np.append(self.At[0],hist.history['acc'])
 			if not self.val is None:
 				self.Jc[0] = np.append(self.Jc[0],hist.history['val_loss'])
-				self.Ac[0] = np.append(self.Ac[0],hist.history['val_accuracy'])
+				self.Ac[0] = np.append(self.Ac[0],hist.history['val_acc'])
 			self.hist.append(hist)
 		else:
 			kf = KFold(n_splits=self.k)
@@ -311,8 +311,8 @@ class NNClass(object):
 
 				self.Jt[k] = np.append(self.Jt[k],hist.history['loss'])
 				self.Jc[k] = np.append(self.Jc[k],hist.history['val_loss'])
-				self.At[k] = np.append(self.At[k],hist.history['accuracy'])
-				self.Ac[k] = np.append(self.Ac[k],hist.history['val_accuracy'])
+				self.At[k] = np.append(self.At[k],hist.history['acc'])
+				self.Ac[k] = np.append(self.Ac[k],hist.history['val_acc'])
 				self.hist[k].append(hist)
 				k+=1
 		return self.hist
@@ -347,13 +347,13 @@ class NNClass(object):
 			x = np.array([X]).T
 		else:
 			x = X
-		y = self.model.predict(x)
+		y = self.model[k].predict(x)
 	
 		#work out the class
 		c = np.argmax(y,axis=1) + 1
 		
 		#and probability
-		if self.Output == 'softmax':
+		if self.OutAF == 'softmax':
 			p = np.copy(y)
 		else:
 			p = _Softmax(y)
@@ -377,8 +377,10 @@ class NNClass(object):
 			
 		Returns
 		=======
-		out : float
+		J : float
 			Cost function output.
+		A : float
+			Accuracy
 		'''
 		if X is None and not self.test is None:
 			Xt = self.test[0]
@@ -394,8 +396,8 @@ class NNClass(object):
 			print('Please add test data')
 			return None
 		
-		out = self.model[k].evaluate(x=Xt,y=yt,verbose=0)
-		return out[0]
+		J,_,A = self.model[k].evaluate(x=Xt,y=yt,verbose=0)
+		return J,A
 			
 		
 	
@@ -697,8 +699,8 @@ class NNClass(object):
 		else:
 			ax = fig		 
 			
-		ax.plot(self.At[k],color='blue',label='$A_t$')
-		ax.plot(self.Ac[k],color='red',label='$A_c$')
+		ax.plot(self.At[k]*100,color='blue',label='$A_t$')
+		ax.plot(self.Ac[k]*100,color='red',label='$A_c$')
 		
 		ax.set_xlim(0,self.At[k].size)
 		yl = ax.get_ylim()
