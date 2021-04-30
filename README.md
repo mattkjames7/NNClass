@@ -34,7 +34,7 @@ Start by training training a network:
 import NNClass as nnc
 
 #create the network, defining the activation functions and the number of nodes in each layer
-net = nnc.NNClass(s,AF='softplus',Output='linear')
+net = nnc.NNClass(s,AF='sigmoid',Output='softmax')
 
 #note that s should be a list, where each element denotes the number of nodes in each layer
 
