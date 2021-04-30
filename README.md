@@ -83,3 +83,12 @@ net.Save(fname='networkname.bin')
 net = nnc.LoadANN(fname='networkname.bin')
 ```
 
+Running ```mnist = nnc.Test()``` will perform a test on the code, by training a neural network to classify a set of hand-written digits (0-9) from the MNIST dataset (https://deepai.org/dataset/mnist). The function will then plot out the cost, accuracy and an example of a classified digit, e.g.:
+
+![](cost.png)
+
+![](accuracy.png)
+
+![](digit.png)
+
+The 10,000 sample MNIST data can be accessed using the `NNClass.MNIST` object.

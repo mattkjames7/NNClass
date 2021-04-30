@@ -6,7 +6,21 @@ import os
 from .NNClass import NNClass
 
 class MNIST(object):
-	def __init__(self,Hidden=[20],Split=[0.8,0.1,0.1]):
+	def __init__(self,Hidden=[10],Split=[0.8,0.1,0.1]):
+		'''
+		This is a simple object which uses 10,000 samples from the 
+		MNIST dataset to test the NNClass object.
+		
+		Inputs
+		======
+		Hidden : list
+			A list defining the number of nodes in each hidden layer.
+		Split : list
+			3-element list, where each elements corresponds to the 
+			proportion of the dataset to be used for training, 
+			validation and testing, respectively.
+			
+		'''
 		
 		#read the labels
 		self._ReadImages()
@@ -26,7 +40,7 @@ class MNIST(object):
 		self.net.AddValidationData(self.Xc,self.yc)
 		self.net.AddTestData(self.Xtest,self.ytest)
 		
-		self.Trained = False
+		self.trained = False
 		
 		
 	def _ReadLabels(self):
@@ -91,11 +105,17 @@ class MNIST(object):
 		self.ytest = self.y[self.mt+self.mc:]
 		
 	def Train(self,nEpoch,BatchSize=None):
+		'''
+		Train the network.
+		'''
 		
 		self.net.Train(nEpoch,BatchSize=BatchSize)
+		self.trained = True
 		
 	def PlotSample(self,i,fig=None,maps=[1,1,0,0]):
-		
+		'''
+		Plot one of the samples.
+		'''
 		
 		scale = [0.0,1.0]
 		norm = colors.Normalize(vmin=scale[0],vmax=scale[1])
@@ -117,20 +137,29 @@ class MNIST(object):
 		sm = ax.pcolormesh(xg,yg,grid,cmap='Greys',norm=norm)
 		
 		
-		y,p,c = self.Predict(np.array([self.X[i]]))
 		
 		ax.text(0.1,0.9,'Class: {:d}'.format(self.y[i]),color='blue',ha='left')
-		ax.text(0.1,0.8,'Predicted: {:d}'.format(c[0] % 10),color='red',ha='left')
+
+		if self.trained:
+			y,p,c = self.Predict(np.array([self.X[i]]))
+
+			ax.text(0.1,0.8,'Predicted: {:d}'.format(c[0] % 10),color='red',ha='left')
 		
 		
 		return ax
 		
 		
 	def PlotRandomSample(self,fig=None,maps=[1,1,0,0]):
+		'''
+		Plot a random sample.
 		
+		'''
 		i = np.random.randint(0,self.m)
 		return self.PlotSample(i,fig=fig,maps=maps)
 
 	def Predict(self,X):
+		'''
+		Predict a classification.
 		
+		'''
 		return self.net.Predict(X)
