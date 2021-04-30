@@ -1,0 +1,2 @@
+recursive-include NNClass/__data/MNIST/ *
+
