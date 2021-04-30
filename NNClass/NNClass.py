@@ -285,11 +285,15 @@ class NNClass(object):
 		#now we can train the network(s)
 		if self.k == 1:
 			hist = self.model[0].fit(self.X,self.y,epochs=nEpoch,batch_size=BatchSize,validation_data=self.val,verbose=verbose,sample_weight=self.SampleWeights)
+			if 'acc' in list(hist.history.keys()):
+				akey = 'acc'
+			else:
+				akey = 'accuracy'			
 			self.Jt[0] = np.append(self.Jt[0],hist.history['loss'])
-			self.At[0] = np.append(self.At[0],hist.history['acc'])
+			self.At[0] = np.append(self.At[0],hist.history[akey])
 			if not self.val is None:
 				self.Jc[0] = np.append(self.Jc[0],hist.history['val_loss'])
-				self.Ac[0] = np.append(self.Ac[0],hist.history['val_acc'])
+				self.Ac[0] = np.append(self.Ac[0],hist.history['val_'+akey])
 			self.hist.append(hist)
 		else:
 			kf = KFold(n_splits=self.k)
@@ -308,11 +312,14 @@ class NNClass(object):
 					sw = copy.deepcopy(self.SampleWeights[train_index])
 				
 				hist = self.model[k].fit(Xt,yt,epochs=nEpoch,batch_size=BatchSize,validation_data=(Xc,yc),verbose=verbose,sample_weight=sw)
-
+				if 'acc' in list(hist.history.keys()):
+					akey = 'acc'
+				else:
+					akey = 'accuracy'
 				self.Jt[k] = np.append(self.Jt[k],hist.history['loss'])
 				self.Jc[k] = np.append(self.Jc[k],hist.history['val_loss'])
-				self.At[k] = np.append(self.At[k],hist.history['acc'])
-				self.Ac[k] = np.append(self.Ac[k],hist.history['val_acc'])
+				self.At[k] = np.append(self.At[k],hist.history[akey])
+				self.Ac[k] = np.append(self.Ac[k],hist.history['val_'+akey])
 				self.hist[k].append(hist)
 				k+=1
 		return self.hist
