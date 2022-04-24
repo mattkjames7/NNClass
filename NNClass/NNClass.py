@@ -427,6 +427,7 @@ class NNClass(object):
 		'''
 		w = []
 		b = []
+		print(k)
 		tmp = self.model[k].get_weights()
 		for i in range(0,self.L-1):
 			w.append(tmp[i*2])
@@ -459,7 +460,7 @@ class NNClass(object):
 			ipt.append(b[i])
 		self.model[k].set_weights(ipt)
 
-	def Save(self,fname=None,Best=False,ferr=None):
+	def Save(self,fname=None,Best=False,ferr=None,SaveErr=True):
 		'''
 		Saves artificial neural network(s) to file(s)
 		
@@ -494,23 +495,24 @@ class NNClass(object):
 		if self.k == 1 and not Best:
 			#only one to save
 			self._SaveANN(0,fout)
-		elif Best:
+		elif Best and SaveErr:
+		
 			J = [0]*self.k
 			#choose the best performing ann
 			if not self.test is None:
 				for k in range(0,self.k):
-					J[k] = self.Test(k=k)
+					J[k],_ = self.Test(k=k)
 			else:
 				for k in range(0,self.k):
 					J[k] = self.Jc[k][-1]
 			J = np.array(J)
+
 			use = np.argmin(J)
-			
 			#get previous tests
 			if ferr is None:
 				ferr = fname[:-4]+'.err'
 			errors = self._GetTests(ferr)
-			
+	
 			#check if the newest error is less then the rest
 			if errors.size == 0:
 				savenet = True
@@ -524,6 +526,19 @@ class NNClass(object):
 			
 			if savenet:
 				self._SaveANN(use,fout)
+		elif Best:
+			J = [0]*self.k
+			#choose the best performing ann
+			if not self.test is None:
+				for k in range(0,self.k):
+					J[k],_ = self.Test(k=k)
+			else:
+				for k in range(0,self.k):
+					J[k] = self.Jc[k][-1]
+			J = np.array(J)
+
+			use = np.argmin(J)			
+			self._SaveANN(use,fout)
 		else:
 			#save all
 			for k in range(0,self.k):
@@ -631,8 +646,8 @@ class NNClass(object):
 		#now save the result
 		f = open(fname,'wb')
 		pf.ArrayToFile(self.s,'int32',f)
-		pf.ArrayToFile(self.scale0,'float32',f)
-		pf.ArrayToFile(self.scale1,'float32',f)
+		#pf.ArrayToFile(self.scale0,'float32',f)
+		#pf.ArrayToFile(self.scale1,'float32',f)
 		pf.ListArrayToFile(w,'float32',f)
 		pf.ListArrayToFile(b,'float32',f)
 		pf.ArrayToFile(self.Jt[k],'float32',f)

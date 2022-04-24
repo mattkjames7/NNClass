@@ -48,8 +48,8 @@ def LoadANN(fname,ReturnModel=True,ReadCost=True):
 	#load stuff from file
 	f = open(fname,'rb')
 	s = pf.ArrayFromFile('int32',f)
-	scale0 = pf.ArrayFromFile('float32',f)
-	scale1 = pf.ArrayFromFile('float32',f)
+	#scale0 = pf.ArrayFromFile('float32',f)
+	#scale1 = pf.ArrayFromFile('float32',f)
 	w = pf.ListArrayFromFile('float32',f)
 	b = pf.ListArrayFromFile('float32',f)
 	if ReadCost:
@@ -83,10 +83,10 @@ def LoadANN(fname,ReturnModel=True,ReadCost=True):
 		model.hist = [[]]
 
 		model.SetWeights(w,b)
-		model.scale0 = scale0
-		model.scale1 = scale1
+		#model.scale0 = scale0
+		#model.scale1 = scale1
 
 
 		return model
 	else:
-		return s,scale0,scale1,w,b,Jt,Jc,At,Ac
+		return s,w,b,Jt,Jc,At,Ac
